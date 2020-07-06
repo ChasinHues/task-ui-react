@@ -1,0 +1,10 @@
+.completed {
+    text-decoration: line-through;
+    color: green;
+}
+
+li {
+    list-style: none;
+    padding: 1em;
+    border: 1px solid gray;
+}
