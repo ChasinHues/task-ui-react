@@ -1,63 +1,67 @@
-import React, { ChangeEvent } from 'react'
+import React from 'react'
 import Task from './Task'
-import TODOS, { ITodo } from '../todos'
+import NewTask from './NewTask'
 
-interface ITodoListState {
-    todos: ITodo[]
-    newTodo: string
-}
+const tasks = [
+    { id: 1, title: "Take out the washing", done: false },
+    { id: 2, title: "Have lunch", done: false },
+    { id: 3, title: "Random task", done: true },
+]
 
-export default class TaskList extends React.Component<object, ITodoListState> {
+export default class TaskList extends React.Component<any, any> {
     constructor(props: any) {
         super(props)
         this.state = {
-            todos: TODOS,
-            newTodo: ''
+            tasks: tasks,
+            selectedTask: null,
+            newTask: ''
         }
     }
 
-    // renderTodos() {
-    //     return this.state.todos.map(todo => {
-    //         return <Task key={todo.id} item={todo} />
-    //     })
-    // }
+    handleStatusClick = (data: any) => {
+        const updatedTasks = [...this.state.tasks]
+        const matchedIndex = updatedTasks.findIndex((task: any) => task.id === data.id)
+        updatedTasks[matchedIndex].done = !updatedTasks[matchedIndex].done
+        this.setState({tasks: updatedTasks})
+    }
 
-    // handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    //     this.setState({newTodo: e.target.value})
-    // }
+    handleTaskSelect = (data: any) => {
+        this.setState({selectedTask: data.id})
+    }
 
-    // handleClick = () => {
-    //     let newTodo: ITodo = {
-    //         id: this.state.todos.length + 1,
-    //         name: this.state.newTodo,
-    //         isCompleted: false
-    //     }
-    //     let newTodos = [...this.state.todos, newTodo]
-    //     this.setState({
-    //         todos: newTodos,
-    //         newTodo: ''
-    //     })
-    // }
+    handleNewTaskChange = (e: any) => {
+        this.setState({newTask: e.target.value})
+    }
 
-    // handleKeyDown = (e: any) => {
-    //     if(e.key === 'Enter') {
-    //         this.handleClick()
-    //     }
-    // }
+    handleNewTask = () => {
+        const newTask = { 
+            id: this.state.tasks.length + 1, 
+            title: this.state.newTask, 
+            done: false 
+        }
+        const updatedTasks = [...this.state.tasks, newTask]
+        this.setState({
+            tasks: updatedTasks,
+            newTask: ''
+        })
+    }
 
     render() {
+        const taskComponents = this.state.tasks.map((task: any) => (
+            <Task key={task.id} task={task}
+                statusClickHandler={this.handleStatusClick}
+                taskSelectHandler={this.handleTaskSelect} />
+        ))
+        const selectedTaskText = <p>The selected task is: {this.state.selectedTask ?? "None"}</p>
+
         return (
             <div>
-                <ul>
-                    {/* {this.renderTodos()} */}
-                </ul>
-                <div>
-                    {/* <input type="text" placeholder="Add new todo item" 
-                        value={this.state.newTodo} 
-                        onChange={this.handleChange} 
-                        onKeyDown={this.handleKeyDown} /> */}
-                    {/* <button onClick={this.handleClick}>Add</button> */}
+                <div className="divide-y divide-gray-400">
+                    {taskComponents}
                 </div>
+                {selectedTaskText}
+                <p>{this.state.newTask}</p>
+                <NewTask value={this.state.newTask} changeHandler={this.handleNewTaskChange} addNewTaskHandler={this.handleNewTask} />
             </div>
         )
     }
